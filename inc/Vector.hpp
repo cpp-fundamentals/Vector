@@ -1,4 +1,6 @@
 #include <cstddef>
+#include <iostream>
+#include <concepts>
 
 template <typename T>
 class Vector
@@ -32,6 +34,25 @@ public:
         obj.capacity_ = 0;
     }
     
+    bool operator==(const Vector& obj) const
+    {
+        static_assert(std::equality_comparable<T>,
+                    "ERROR: Types must be comparable!!!!");
+
+        if(size_ != obj.size_)
+        {
+            return false;
+        }
+        for (size_t i = 0; i < size_; i++)
+        {
+            if(obj.data_[i] != data_[i])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     size_t size()
     {
         return size_;
@@ -43,8 +64,12 @@ public:
 
     void push_back(T elem)
     {
-        //TODO: capacity recheck;
-        data_[size++] = elem;
+        //std::cout << "PUSH BACK" << std::endl;
+        if(size_ == capacity_)
+        {
+            _grow();
+        }
+        data_[size_++] = elem;
     }
 
     T& operator[](int index)
@@ -57,9 +82,19 @@ public:
     }
 private:
 
-    void capacity_recheck_()
+    void _grow()
     {
-        ///TODO 
+        size_t new_capacity = (capacity_ == 0 ) ? 1 : capacity_ * 2;
+
+        T* new_data = new T[new_capacity];
+        for (size_t i = 0; i < size_; i++)
+        {
+            new_data[i] = data_[i];
+        }
+        delete [] data_;
+    
+        data_ = new_data;
+        capacity_ = new_capacity;
     }
 
     T* data_;
