@@ -17,7 +17,6 @@ public:
         {
             data_[i] = obj.data_[i];
         }
-        
     }
     
     Vector(Vector&& obj):
@@ -34,6 +33,44 @@ public:
         obj.capacity_ = 0;
     }
     
+    Vector& operator=(const Vector& obj)
+    {
+        if(this == &obj)
+                return *this;
+
+        if(data_ != nullptr)
+        {
+            delete [] data_;
+        }
+        data_ = new T[obj.capacity_];
+        for (size_t i = 0; i < obj.size_; i++)
+        {
+            data_[i] = obj.data_[i];
+        }
+        size_ = obj.size_;
+        capacity_ = obj.capacity_;
+        return *this;
+    }
+
+    Vector& operator=(Vector&& obj)
+    {
+        if(this == &obj)
+            return *this;
+
+        if(data_ != nullptr)
+        {
+            delete [] data_;
+        }
+        data_ = obj.data_;
+        size_ = obj.size_;
+        capacity_ = obj.capacity_;
+        obj.data_ = nullptr;
+        obj.size_ = 0;
+        obj.capacity_ = 0;
+        return *this;
+    }
+
+
     bool operator==(const Vector& obj) const
     {
         static_assert(std::equality_comparable<T>,
@@ -64,7 +101,6 @@ public:
 
     void push_back(T elem)
     {
-        //std::cout << "PUSH BACK" << std::endl;
         if(size_ == capacity_)
         {
             _grow();
